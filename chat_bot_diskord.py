@@ -6,8 +6,8 @@ import os
 import sys
 
 
-TOKEN = "ODMyMzAwODg1OTMzMjkzNTg5.YHhymg.FCycanWiHGx-B2VONpYcIf7Cj00"
-KEY_YANDEX_POGODA = '01f297bf-f6e4-4fa3-8fc3-216c84afffea'
+TOKEN = token
+KEY_YANDEX_POGODA = key
 bot = commands.Bot(command_prefix='!#')
 sp_use_cities = []
 
