@@ -4,8 +4,9 @@ import requests
 
 
 # Определяем переменные и константы
+# токен нельзя давать в откытом доступе
 TOKEN = token
-KEY_YANDEX_POGODA = key
+KEY_YANDEX_POGODA = '01f297bf-f6e4-4fa3-8fc3-216c84afffea'
 bot = commands.Bot(command_prefix='!#')
 sp_use_cities = []
 
@@ -113,7 +114,7 @@ def get_image(object, scale):
 
 
 # команда игры в города
-@bot.command(name='play_cities')
+@bot.command(name='play')
 async def start_play_cities(ctx, city):
     await ctx.send(find_city(city))
 
