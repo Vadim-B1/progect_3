@@ -1,17 +1,16 @@
 import discord
 from discord.ext import commands
-import random
 import requests
-import os
-import sys
 
 
-TOKEN = "ODMyMzAwODg1OTMzMjkzNTg5.YHhymg.FCycanWiHGx-B2VONpYcIf7Cj00"
-KEY_YANDEX_POGODA = '01f297bf-f6e4-4fa3-8fc3-216c84afffea'
+# Определяем переменные и константы
+TOKEN = token
+KEY_YANDEX_POGODA = key
 bot = commands.Bot(command_prefix='!#')
 sp_use_cities = []
 
 
+# Функция игры в города
 def find_city(city):
     global sp_use_cities
     col = 0
@@ -44,7 +43,8 @@ def find_city(city):
         return eror1 + '. Такого города нет'
 
 
-def pogoda(city):
+# функция получения погоды
+def get_weather(city):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
     geocoder_params = {
         "apikey": '40d1649f-0493-4b70-98ba-98533de7710b',
@@ -97,6 +97,7 @@ def pogoda(city):
         return 'К сожалению информация об этом городе не найдена'
 
 
+# функция возврата картинки
 def get_image(object, scale):
     geocoder_params = {
         "apikey": '40d1649f-0493-4b70-98ba-98533de7710b',
@@ -111,30 +112,23 @@ def get_image(object, scale):
         return 'Повторите попытку'
 
 
+# команда игры в города
 @bot.command(name='play_cities')
 async def start_play_cities(ctx, city):
     await ctx.send(find_city(city))
 
 
+# команда получения погоды
 @bot.command(name='weather')
 async def say_pogoda(ctx, city):
-    await ctx.send(pogoda(city))
+    await ctx.send(get_weather(city))
 
 
+# команда получения изображения местности
 @bot.command(name='picture')
 async def see_map(ctx, city, scope):
     await ctx.send(get_image(city, scope))
 
 
-class YLBotClient(discord.Client):
-    async def on_ready(self):
-        print(f'{self.user} has connected to Discord!')
-
-    async def on_member_join(self, member):
-        await member.create_dm()
-        await member.dm_channel.send(f'Привет, {member.name}!')
-
-
-client = YLBotClient()
-client.run(TOKEN)
+# включение бота
 bot.run(TOKEN)
