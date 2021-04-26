@@ -1,29 +1,27 @@
-# импортируем все необходимые библиотеки
+import discord
 from discord.ext import commands
+import random
 import requests
-import datetime
+import os
+import sys
 
 
-# определяем константы
-TOKEN = token
-KEY_YANDEX_POGODA = key
+TOKEN = "ODMyMzAwODg1OTMzMjkzNTg5.YHhymg.FCycanWiHGx-B2VONpYcIf7Cj00"
+KEY_YANDEX_POGODA = '01f297bf-f6e4-4fa3-8fc3-216c84afffea'
 bot = commands.Bot(command_prefix='!#')
 sp_use_cities = []
 
 
-# функция для игры в города
 def find_city(city):
     global sp_use_cities
     col = 0
     a = -1
     eror1 = 'Назовите другой город'
     find_gorod = False
-    # проверяем введеный город на его существование
     with open('cities.txt', 'r', encoding="utf-8") as fl_ct:
         for line in fl_ct:
             if city.upper() in line.upper():
                 find_gorod = True
-    # выбираем город
     if find_gorod:
         if city not in sp_use_cities:
             bukv = list(city.upper())[a]
@@ -46,8 +44,7 @@ def find_city(city):
         return eror1 + '. Такого города нет'
 
 
-# функция для определения погоды
-def get_weather(city):
+def pogoda(city):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
     geocoder_params = {
         "apikey": '40d1649f-0493-4b70-98ba-98533de7710b',
@@ -89,21 +86,17 @@ def get_weather(city):
         pressure = fct['pressure_mm']
         wind_speed = fct['wind_speed']
         wthr = fct['condition'].split('-and-')
-        timestamp = fct['obs_time']
-        time_now = datetime.datetime.fromtimestamp(timestamp)
         for i in range(len(wthr)):
             if wthr[i] in sl:
                 wthr[i] = sl[wthr[i]]
         return f'''Температура воздуха в городе {city} {temperature}, ощущается как {tmpr_feels_like}.
 Скорость ветра {wind_speed} м/с.
 Давление {pressure} мм.
-На улице {" и ".join(wthr)}.
-Время измерений {time_now}'''
+На улице {" и ".join(wthr)}.'''
     else:
         return 'К сожалению информация об этом городе не найдена'
 
 
-# функция возвращающая снимок области
 def get_image(object, scale):
     geocoder_params = {
         "apikey": '40d1649f-0493-4b70-98ba-98533de7710b',
@@ -118,23 +111,30 @@ def get_image(object, scale):
         return 'Повторите попытку'
 
 
-# бот игры в города
 @bot.command(name='play_cities')
 async def start_play_cities(ctx, city):
     await ctx.send(find_city(city))
 
 
-# бот погоды
 @bot.command(name='weather')
 async def say_pogoda(ctx, city):
-    await ctx.send(get_weather(city))
+    await ctx.send(pogoda(city))
 
 
-# бот снимка местности
 @bot.command(name='picture')
 async def see_map(ctx, city, scope):
     await ctx.send(get_image(city, scope))
 
 
-# подключаем бота
+class YLBotClient(discord.Client):
+    async def on_ready(self):
+        print(f'{self.user} has connected to Discord!')
+
+    async def on_member_join(self, member):
+        await member.create_dm()
+        await member.dm_channel.send(f'Привет, {member.name}!')
+
+
+client = YLBotClient()
+client.run(TOKEN)
 bot.run(TOKEN)
